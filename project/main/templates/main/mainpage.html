@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div>
+  <img src="{% static "images/logo.jpeg" %}" alt="logo" width="600px">
+    <h1 class="contents">Take your time.</h1>
+    <div class="contents_main"> 🌸MTV 정리🌸
+      <!--<ul>
+        <li>MTV란? - Model , View , Template 를 의미 </li>
+        <li>Templates 폴더 - 유저에게 제공할 파일의 구조나 레이아웃을 한 데 모아 관리하는 역할</li>
+        <li>Views.py 파일 - views.py 파일에 함수를 작성함으로써 mainpage 가 렌더링 될 수 있도록 함
+            <br>&emsp;<em>how? 
+              <ol>
+                <li>url 에 해당하는 데이터를 요청(request)</li>
+                <li>데이터에 맞는 html을 전송(render)</li></em>
+              </ol>
+        </li>
+        <li> urls.py 파일 - main 앱에서 views 파일을 import
+      </ul>-->
+        <ul>
+          {% for sentence in first_to_third %}
+          <li> {{ sentence }} </li>
+          {% endfor %}
+            &emsp;<em>how? 
+            <ol>
+              {% for step in third_step %}
+              <li> {{ step }} </li>
+              {% endfor %}
+            </ol>
+          <li> {{last}} </li>
+        </ul>  
+    </div>
+    <div class="contents_main">🌝오늘의 멋쟁이🌛
+      <ul>
+        <li>It's Me</li>
+      </ul>
+    </div>
+      {% endblock content %}
