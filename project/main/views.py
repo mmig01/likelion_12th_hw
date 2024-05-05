@@ -39,7 +39,8 @@ def create(request):
     new_post.pub_date = timezone.now()
     new_post.image = request.FILES.get('image')
     new_post.feel = request.POST['feel']
-
+    #post 의 post_user_id 값을 유저의 id 값으로 설정
+    new_post.post_user_id = request.user.id
     new_post.save()
 
     return redirect('main:detail', new_post.id)

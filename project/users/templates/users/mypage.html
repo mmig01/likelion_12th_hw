@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div>
+    <img src="{% static "images/logo3.jpeg" %}" alt="logo2" width="450px">
+    <h1>My Page です。</h1>
+
+    <h3>이름: {{user.profile.nickname}}</h3>
+    <h3>MBTI: {{user.profile.mbti}}</h3>
+
+    <h1 class="contents">My post list</h1>
+    <div>
+        {% for post in posts %}
+          {% if post.post_user_id == user.id %}
+          <div>
+            <hr/>
+            <h3>{{post.title}}</h3>
+            {{post.writer}} | {{post.pub_date}}<br>
+            오늘의 기분: {{post.feel}}<br>
+            {% if post.image %} 
+              <p><img src="{{ post.image.url }}" alt="사진" width="100px"></p>
+            {% endif %}
+            {{post.summary}}
+            <a href="{% url 'main:detail' post.id %}"><br><br>자세히 보기</a>
+            <br>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+{% endblock content %}
