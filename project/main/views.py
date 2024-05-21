@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.core.files.storage import default_storage
 
-from .models import Post
+from .models import Post, Comment, Tag
 
 # Create your views here.
 
@@ -23,6 +23,20 @@ def new_post(request):
 
 def detail(request, id):
     post = get_object_or_404(Post , pk=id)
+    if request.method == 'GET':
+        comments = Comment.objects.filter(post=post)
+        return render(request, 'main/detail.html', {'post':post, 'comments': comments})
+    
+    elif request.method == 'POST':
+        new_comment = Comment()
+        # foreignkey -> blog 와 user 객체 넣어주기
+        new_comment.post = post
+        new_comment.writer = request.user
+        new_comment.content = request.POST['content']
+        new_comment.pub_date = timezone.now()
+
+        new_comment.save()
+        return redirect('main:detail', id)
     return render(request, 'main/detail.html', {'post' : post})
 
 def edit(request, id):
@@ -31,34 +45,66 @@ def edit(request, id):
 
 #데이터베이스에 저장하는 함수
 def create(request):
-    new_post = Post()
+    if request.user.is_authenticated:
+        new_post = Post()
 
-    new_post.title = request.POST['title']
-    new_post.writer = request.POST['writer']
-    new_post.body = request.POST['body']
-    new_post.pub_date = timezone.now()
-    new_post.image = request.FILES.get('image')
-    new_post.feel = request.POST['feel']
-    #post 의 post_user_id 값을 유저의 id 값으로 설정
-    new_post.post_user_id = request.user.id
-    new_post.save()
+        new_post.title = request.POST['title']
+        new_post.writer = request.user
+        new_post.body = request.POST['body']
+        new_post.pub_date = timezone.now()
+        new_post.image = request.FILES.get('image')
+        new_post.feel = request.POST['feel']
+        #post 의 post_user_id 값을 유저의 id 값으로 설정
+        new_post.save()
 
-    return redirect('main:detail', new_post.id)
+         #본문을 띄어쓰기 기준으로 나누기
+        words = new_post.body.split(' ')
+        tag_list = []
 
+        for w in words:
+            if len(w)>0:
+                if w[0] == "#":
+                    tag_list.append(w[1:])
+
+        for t in tag_list:
+            tag, boolean = Tag.objects.get_or_create(name=t)
+            new_post.tags.add(tag.id)
+
+        return redirect('main:detail', new_post.id)
+    else:
+        return redirect('accounts:login')
+    
 def update(request, id):
     update_post = Post.objects.get(pk=id)
-    update_post.title = request.POST['title']
-    update_post.writer = request.POST['writer']
-    update_post.body = request.POST['body']
-    update_post.pub_date = timezone.now()
-    update_post.image = request.FILES.get('image') 
-    update_post.feel = request.POST['feel']
+    if request.user.is_authenticated and request.user == update_post.writer:
+        update_post.title = request.POST['title']
+        update_post.body = request.POST['body']
+        update_post.feel = request.POST['feel']
+        update_post.pub_date = timezone.now()
+        if request.FILES.get('image'):
+            update_post.image = request.FILES['image']
+        if request.FILES.get('feel'):
+            update_post.image = request.FILES['image']
 
-    update_post.save()
-    return redirect('main:detail', update_post.id)
+        update_post.save()
+        return redirect('main:detail', update_post.id)
+    return redirect('accounts:login', update_post.id)
 
 def delete(request, id):
     delete_post = Post.objects.get(pk=id)
+    if delete_post.image:
+        default_storage.delete(delete_post.image.path)
     delete_post.delete()
-    default_storage.delete(delete_post.image.path)
     return redirect('main:secondpage')
+
+def tag_list(request): # 모든 태그 목록을 볼 수 있는 페이지
+    tags = Tag.objects.all()
+    return render(request, 'main/tag-list.html', {'tags' : tags})
+
+def tag_posts(request, tag_id): # 특정 태그를 가진 게시글의 목록을 볼 수 있는 페이지
+    tag = get_object_or_404(Tag, id=tag_id)
+    posts = tag.posts.all()
+    return render(request, 'main/tag-post.html', {
+        'tag' : tag,
+        'posts' : posts
+    })

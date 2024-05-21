@@ -12,7 +12,7 @@
     <h1 class="contents">My post list</h1>
     <div>
         {% for post in posts %}
-          {% if post.post_user_id == user.id %}
+          {% if post.writer_id == user.id %}
           <div>
             <hr/>
             <h3>{{post.title}}</h3>

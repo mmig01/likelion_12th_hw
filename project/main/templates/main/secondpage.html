@@ -4,8 +4,11 @@
 <div>
   <img src="{% static "images/logo2.jpeg" %}" alt="logo2" width="600px">
   <h1 class="contents">Post List</h1>
-  <a href="{% url 'main:new-post' %}"> &nbsp &nbsp &nbsp 게시글 작성</a>
-  <div>
+  {% if user.is_authenticated %}
+    <div>
+      <a href="{% url 'main:new-post' %}">새 글 작성하기</a>
+    </div>
+  {% endif %}
     {% for post in posts %}
       <div>
         <hr/>
