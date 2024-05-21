@@ -24,11 +24,11 @@
 <div class="comment_container">
     <div class="comment_form">
         {% if user.is_authenticated %}
-        <form action="{% url 'main:detail' post.id %}" method="POST">
+            <form action="{% url 'main:detail' post.id %}" method="POST">
             {% csrf_token %}
             댓글 쓰기 : <input type="text" name="content">
-        <input type="submit" name="submit">
-        </form>
+            <input type="submit" name="submit">
+            </form>
         {% endif %}
     </div>
     <div class="comment_list">
@@ -37,6 +37,9 @@
     <h4>작성자 : {{comment.writer}}</h4>
     <p>내용 : {{comment.content}}</p>
     <p>{{comment.pub_date}}</p>
+        {% if comment.writer == user %}
+            <a href={% url "main:delete-comment" comment.id %}>댓글 삭제하기!!</a> 
+        {% endif %}
     {% endfor %}
     </div>
 </div>

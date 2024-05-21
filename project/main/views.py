@@ -108,3 +108,10 @@ def tag_posts(request, tag_id): # 특정 태그를 가진 게시글의 목록을
         'tag' : tag,
         'posts' : posts
     })
+
+def delete_comment(request, id):
+    delete_comment = Comment.objects.get(pk=id)
+    # 현재 게시물의 detail 페이지로 돌아가기 위한 post 객체
+    current_post = delete_comment.post 
+    delete_comment.delete()
+    return redirect('main:detail', current_post.id)
