@@ -2,8 +2,11 @@
 {% load static %}
 {% block content %}
 <h3>{{post.title}}</h3>
-작성자 : {{post.writer}} | 날짜 : {{post.pub_date}}<br>
-오늘의 기분: {{post.feel}}<br>
+<a href="{% url "users:mypage" post.writer.id %}">작성자 : {{post.writer}}</a><br>
+날짜 : {{post.pub_date}} | 오늘의 기분: {{post.feel}}<br>
+<a href={% url "main:likes" post.id %}>
+    {% if user in post.like.all %} 취소 {% else %} 좋아요 {% endif %}
+</a>
 <hr/>
 <p>
     {% for tag in post.tags.all %}

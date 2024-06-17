@@ -31,13 +31,11 @@ def signup(request):
                 username=request.POST['username'],
                 password=request.POST['password']
             )
-            nickname=request.POST['nickname']
-            department=request.POST['department']
-            mbti =request.POST['mbti']
+            user.profile.nickname = request.POST['nickname']
+            user.profile.department = request.POST['department']
+            user.profile.mbti = request.POST['mbti']
+            user.profile.save()
 
-            profile = Profile(user=user, nickname=nickname, department=department, mbti = mbti)
-            profile.save()
-            
             auth.login(request, user)
             return redirect('/')
     return render(request, 'accounts/signup.html')

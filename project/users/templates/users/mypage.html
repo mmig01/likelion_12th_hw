@@ -2,6 +2,29 @@
 {% load static %}
 
 {% block content %}
+User : {{target_user}} <br>
+UserProfile : {{target_user.profile}} <br>
+
+<p>팔로워<br>
+  {% for follower in followers %}
+  <a href="{% url "users:mypage" follower.user.id %}">이름: {{follower.nickname}}</a> | 
+  {% endfor %}</p>
+<p>팔로잉<br>
+  {% for following in followings %}
+  <a href="{% url "users:mypage" following.user.id %}">이름: {{following.nickname}}</a> | 
+  {% endfor %}</p>
+
+{% if request.user != target_user %}
+    {% if request.user.profile in target_user.profile.followers.all %}
+    <a href="{% url "users:follow" target_user.id %}">
+        <button type="button" class="btn btn-outline-info">언팔로우</button>
+    </a>
+    {% else %}
+    <a href="{% url "users:follow" target_user.id %}">
+        <button type="button" class="btn btn-info">팔로우</button>
+    {% endif %}
+{% endif %}
+
 <div>
     <img src="{% static "images/logo3.jpeg" %}" alt="logo2" width="450px">
     <h1>My Page です。</h1>

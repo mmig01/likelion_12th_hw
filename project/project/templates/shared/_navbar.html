@@ -12,7 +12,7 @@
       <a class="nav-link-account">
         <a class="nav-link-user">{{user.username}} &nbsp</a> 
         <a href="{% url "accounts:logout" %}">로그아웃 &nbsp</a> 
-        <a href="{% url "users:mypage" %}">mypage</a>
+        <a href="{% url "users:mypage" user.id %}">mypage</a>
       </a>
       {% else %}
       <!-- 로그아웃 시 보이는 화면-->
